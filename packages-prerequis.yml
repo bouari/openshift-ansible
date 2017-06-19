@@ -1,0 +1,41 @@
+- hosts: all
+  tasks:
+   - name: Add epel repository
+     yum_repository:
+      name: epel
+      description: EPEL YUM repo
+      baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+
+   - name: Add CentOS updates repository
+     yum_repository:
+      name: updates
+      description: CentOS-$releasever - Updates
+      mirrorlist: http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=updates
+      enabled: 1
+      gpgkey: http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-7
+
+   - name: import rpm pgp key
+     rpm_key:
+      state: present
+      key: "{{ item }}"
+     with_items:
+      - http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-7
+      - https://muug.ca/mirror/fedora-epel//RPM-GPG-KEY-EPEL-7
+
+   - name: upgrade all packages
+     yum:
+      name: "*"
+      state: latest
+
+   - name: Install Openvswitch 
+     yum:
+      name: openvswitch
+      state: present
+
+- hosts: masters
+  tasks:
+   - name: Install python metric dependencies
+     yum:
+      name: python-passlib
+      state: present
+
