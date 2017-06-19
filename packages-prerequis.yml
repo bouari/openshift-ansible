@@ -34,8 +34,18 @@
 
 - hosts: masters
   tasks:
-   - name: Install python metric dependencies
-     yum:
-      name: python-passlib
-      state: present
+   - name: Install prerequisites packages
+     action: >
+       {{ ansible_pkg_mgr }} name={{ item }} state=present update_cache=yes
+     with_items:
+       - python-passlib
+       - httpd-tools
+       - java-1.8.0-openjdk-headless
+
+#     yum:
+#      name: {{item}} 
+#      state: installed 
+#      with_items:
+#         - python-passlib
+#         - httpd-tools
 
